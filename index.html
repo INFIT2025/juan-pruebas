@@ -140,8 +140,8 @@
             
             <div class="bg-gray-900/60 border border-gray-800 p-4 rounded-xl mb-4">
                 <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">TIPO DE PLAN:</p>
-                <p class="text-sm font-bold text-blue-400 italic flex items-center justify-center gap-2">
-                    <i class="fas fa-flag"></i> Plan General - México
+                <p class="text-sm font-bold text-green-400 italic flex items-center justify-center gap-2">
+                    <i class="fas fa-mountain"></i> Plan Local - Santa Ana Hueytlalpan
                 </p>
             </div>
 
@@ -160,6 +160,10 @@
                     Desbloquear Mi Plan
                 </button>
                 <p id="error-msg" class="text-red-500 text-xs mt-4 hidden bg-red-500/10 p-2 rounded"><i class="fas fa-exclamation-triangle"></i> Número incorrecto o dispositivo bloqueado.</p>
+            </div>
+            <div id="login-loader" class="hidden flex-col items-center justify-center py-8">
+                <div class="w-10 h-10 border-4 border-gray-700 border-t-gold rounded-full animate-spin mb-4"></div>
+                <p class="text-gray-400 text-sm">Verificando dispositivo...</p>
             </div>
         </div>
     </div>
@@ -185,9 +189,9 @@
                         <span class="text-gold font-bold text-sm uppercase tracking-wider">Nivel 1 Activado</span>
                     </div>
                     
-                    <div class="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/30 px-3 py-1 rounded-full mb-4">
-                        <i class="fas fa-flag text-blue-400 text-xs"></i>
-                        <span class="text-blue-400 text-xs">Plan General - México</span>
+                    <div class="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 px-3 py-1 rounded-full mb-4">
+                        <i class="fas fa-mountain text-green-400 text-xs"></i>
+                        <span class="text-green-400 text-xs">Plan Local - Santa Ana Hueytlalpan</span>
                     </div>
                     
                     <p class="text-gray-400 text-sm leading-relaxed">
@@ -395,8 +399,8 @@
                 </div>
                 <div class="mt-3 pt-3 border-t border-gold/20 flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <i class="fas fa-flag text-blue-400 text-xs"></i>
-                        <span class="text-[10px] text-gray-400">Plan General - México</span>
+                        <i class="fas fa-mountain text-green-400 text-xs"></i>
+                        <span class="text-[10px] text-gray-400">Plan Local - Santa Ana Hueytlalpan</span>
                     </div>
                     <div class="flex items-center gap-1">
                         <span class="text-[10px] text-gray-500">Progreso:</span>
@@ -715,11 +719,11 @@
                 </div>
             </div>
             
-            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Huevos rancheros. 4 claras de huevo + 1 yema, 3 tortillas de maíz medianas, 1/2 taza de frijoles negros refritos (85g), 1/2 taza de salsa ranchera casera (50g), 1 cucharada de aceite vegetal (15ml) para cocinar, 1 taza de sandía picada (150g).</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Licuado de avena con manzana. 1/2 taza de avena en hojuelas (40g), 1 taza de leche descremada (240ml), 1 manzana mediana (180g).</p></div>
-            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Bisteces encebollados con arroz, papa y ensalada. 130g de bistec de res magro cocido, 1 taza de arroz blanco cocido (150g), 1/2 papa mediana cocida (75g), 1/2 cebolla rebanada (50g), 1 taza de ensalada mixta (lechuga, tomate, pepino) (100g), 1 cucharada de aceite de oliva (15ml) para cocinar o aderezar.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Atún con tostadas y aguacate. 1 lata de atún en agua (120g drenado), 1/4 de aguacate mediano (50g), 3 tostadas de maíz horneadas (90g).</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Tostadas de tinga de pollo con frijoles y queso fresco. 120g de pechuga de pollo deshebrada, 2 tostadas de maíz horneadas (60g), 1/2 taza de frijoles negros cocidos (85g), 40g de queso fresco desmoronado, 1/2 taza de lechuga y rodajas de tomate (50g).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Huevos rancheros con frijoles, tortillas y melón. Ingredientes con medidas: 4 claras de huevo + 1 yema (aprox. 180g), 1/2 taza de frijoles bayos cocidos (aprox. 80g), 2 tortillas de maíz hechas a mano (aprox. 100g), 1 taza de melón picado (aprox. 160g), salsa ranchera casera (1/2 taza de jitomate, cebolla, chile serrano), 1 cucharadita de aceite de aguacate (5ml).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Plátano con almendras. Ingredientes con medidas: 1 plátano grande (aprox. 150g), 1/4 taza de almendras naturales (aprox. 30g).</p></div>
+            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Pollo en salsa de flor de calabaza con arroz rojo y nopalitos. Ingredientes con medidas: 180g de pechuga de pollo cocida, 2 tazas de arroz rojo cocido (aprox. 300g), 1.5 tazas de nopalitos cocidos y picados, salsa de flor de calabaza (1 taza de flores de calabaza, cebolla, epazote), 1 cucharada de aceite de canola (15ml) para cocinar.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Quesillo con jícama y aguacate. Ingredientes con medidas: 50g de quesillo, 2 tazas de jícama picada (aprox. 260g), 1/4 de aguacate mediano (aprox. 35g).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Barbacoa de res magra con frijoles, quelites y dos tortillas. Ingredientes con medidas: 150g de barbacoa de res (maciza, sin grasa visible), 1 taza de frijoles bayos cocidos (aprox. 160g), 2 tortillas de maíz (aprox. 100g), 1.5 tazas de quelites salteados con jitomate y cebolla, 1 cucharadita de aceite de aguacate (5ml) para saltear.</p></div>
         </div>
 
         <!-- VARIACIÓN 2 -->
@@ -733,11 +737,11 @@
                     <span class="text-[10px] text-blue-400">Martes, Jueves, Sábado</span>
                 </div>
             </div>
-            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Burrito de huevo con frijoles y verduras. 3 claras de huevo + 1 yema, 2 tortillas de harina integrales medianas (80g), 1/2 taza de frijoles negros refritos (85g), 1/2 taza de espinacas y cebolla salteadas (50g), 1 taza de melón picado (150g).</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Yogurt natural con avena y fruta. 1.5 tazas de yogurt natural sin azúcar (360g), 1/2 taza de avena en hojuelas (40g), 1/2 taza de fresas rebanadas (80g).</p></div>
-            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Pollo guisado con calabacitas, arroz y aguacate. 150g de pechuga de pollo en cubos cocida, 1.5 tazas de arroz blanco cocido (225g), 1 taza de calabacitas y elote cocidos (150g), 1/4 de aguacate mediano (50g), 1 cucharadita de aceite vegetal (5ml) para cocinar.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Pan tostado con queso panela y jitomate. 2 rebanadas de pan integral (60g), 60g de queso panela, 1/2 jitomate rebanado (60g).</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Sopa de fideo con carne molida y verduras. 80g de carne molida magra de res cocida, 1 taza de pasta de fideo cocida (100g), 1 taza de zanahoria, chayote y papa en cubos cocida (150g), 1/2 taza de caldo de tomate casero (50g), 1 cucharadita de aceite vegetal (5ml) para cocinar.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Huevos revueltos con nopalitos, frijoles, tortillas y fruta. Ingredientes con medidas: 4 claras de huevo + 1 yema (aprox. 180g), 1 taza de frijoles bayos cocidos (aprox. 160g), 2 tortillas de maíz hechas a mano (aprox. 100g), 1 taza de papaya picada (aprox. 140g), 1.5 tazas de nopalitos cocidos y picados, 1 cucharadita de aceite de aguacate (5ml).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Elote desgranado con queso cotija y chile. Ingredientes con medidas: 2 tazas de granos de elote cocido (aprox. 330g), 1/4 taza de queso cotija rallado (aprox. 30g), chile piquín y limón al gusto.</p></div>
+            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Barbacoa de pollo de rancho con arroz rojo y ensalada de jitomate y aguacate. Ingredientes con medidas: 180g de pollo de rancho deshebrado, 2 tazas de arroz rojo cocido (aprox. 300g), ensalada de 1 taza de jitomate picado, 1/2 cebolla, 1/2 chile serrano, 1/2 aguacate mediano (aprox. 75g).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Tostadas de quelites con queso panela. Ingredientes con medidas: 2 tostadas horneadas de maíz (aprox. 60g), 60g de queso panela, 2 tazas de quelites salteados con jitomate y cebolla, 1 cucharadita de aceite de aguacate (5ml).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Carne de res deshebrada con huitlacoche y frijoles. Ingredientes con medidas: 150g de carne de res deshebrada (maciza), 1 taza de huitlacoche salteado (aprox. 120g), 1/2 taza de frijoles bayos cocidos (aprox. 80g), 1 tortilla de maíz (aprox. 50g), 1 cucharadita de aceite de aguacate (5ml).</p></div>
         </div>
 
         <!-- RETO DE ELIMINACIÓN PAULATINA -->
@@ -1012,7 +1016,7 @@
                         <p class="font-bold text-white uppercase text-[10px]">Proteínas</p>
                     </div>
                     <div class="pl-8">
-                        <p class="text-xs text-gray-300 leading-relaxed">Huevos, Pechuga de pollo, Bistec de res magro, Atún en agua, Queso panela, Yogurt natural sin azúcar, Carne molida magra de res, Frijoles negros, Garbanzos.</p>
+                        <p class="text-xs text-gray-300 leading-relaxed">Huevos, Pechuga de pollo, Barbacoa de res (maciza), Quesillo, Queso panela, Pollo de rancho (para deshebrar).</p>
                     </div>
                 </div>
 
@@ -1024,7 +1028,7 @@
                         <p class="font-bold text-white uppercase text-[10px]">Carbohidratos</p>
                     </div>
                     <div class="pl-8">
-                        <p class="text-xs text-gray-300 leading-relaxed">Tortillas de maíz, Tortillas de harina integrales, Arroz blanco, Avena en hojuelas, Papa, Pan integral, Pasta de fideo, Tostadas de maíz horneadas.</p>
+                        <p class="text-xs text-gray-300 leading-relaxed">Tortillas de maíz hechas a mano, Frijoles bayos (secos o cocidos), Arroz blanco (para preparar arroz rojo), Plátanos, Melón, Papaya, Jícama, Granos de elote (maíz), Tostadas horneadas de maíz, Huitlacoche, Sandía.</p>
                     </div>
                 </div>
 
@@ -1036,7 +1040,7 @@
                         <p class="font-bold text-white uppercase text-[10px]">Verduras y Frutas</p>
                     </div>
                     <div class="pl-8">
-                        <p class="text-xs text-gray-300 leading-relaxed">Papaya, Sandía, Manzana, Plátano, Melón, Fresas, Espinacas, Nopales, Cebolla, Tomate (jitomate), Pepino, Lechuga, Ejotes, Jícama, Chile serrano, Calabacitas, Elote (maíz), Zanahoria, Chayote.</p>
+                        <p class="text-xs text-gray-300 leading-relaxed">Nopales (frescos), Quelites (manojo), Flores de calabaza (frescas), Jitomates, Cebolla, Chile serrano, Epazote (manojo).</p>
                     </div>
                 </div>
             </div>
@@ -1122,8 +1126,12 @@
         function verifyDeviceLock() {
             const btnForm = document.getElementById('login-form');
             const loader = document.getElementById('login-loader');
-            btnForm.style.display = 'none';
-            loader.style.display = 'flex';
+            
+            if (btnForm) btnForm.classList.add('hidden');
+            if (loader) {
+                loader.classList.remove('hidden');
+                loader.style.display = 'flex';
+            }
 
             let currentDeviceId = localStorage.getItem('infit_device_id');
             if (!currentDeviceId) {
@@ -1134,7 +1142,12 @@
                 localStorage.setItem('infit_device_id', currentDeviceId);
             }
 
-            if(!db) { finishLogin(); return; }
+            // Si no hay Firebase, permitir acceso
+            if(!db) { 
+                console.log('Firebase no disponible, acceso permitido');
+                finishLogin(); 
+                return; 
+            }
 
             const deviceRef = db.ref('users/' + userId + '/deviceId');
             deviceRef.once('value')
@@ -1146,12 +1159,18 @@
                     } else if (savedDevice === currentDeviceId) {
                         finishLogin();
                     } else {
-                        loader.style.display = 'none';
-                        btnForm.style.display = 'block';
+                        if (loader) {
+                            loader.classList.add('hidden');
+                            loader.style.display = 'none';
+                        }
+                        if (btnForm) btnForm.classList.remove('hidden');
                         showError("Plan vinculado a otro celular.");
                     }
                 })
-                .catch(err => { finishLogin(); });
+                .catch(err => { 
+                    console.log('Error Firebase:', err);
+                    finishLogin(); 
+                });
         }
 
         function finishLogin() {
