@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>INFIT VIP | juan</title>
+    
+    <!-- PWA META TAGS -->
+    <meta name="theme-color" content="#000000">
+    <meta name="background-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="INFIT juan">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="INFIT juan">
+    <meta name="msapplication-TileColor" content="#FFD700">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- PRECONNECT -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { gold: '#FFD700', dark: '#0a0a0a', panel: '#151515' },
+                    fontFamily: { sans: ['Inter'], heading: ['Oswald'], serif: ['Georgia', 'serif'] },
+                    animation: { 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: #000; color: #fff; -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+        .glass-panel { background: rgba(30, 30, 30, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 215, 0, 0.15); }
+        .text-gradient { background: linear-gradient(to right, #FFD700, #FDB931); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); } 50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.6); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .tab-btn.active { color: #000; background: #FFD700; font-weight: bold; border-color: #FFD700; }
+        .tab-btn { color: #888; border: 1px solid #333; transition: all 0.3s; }
+        .shimmer-text { background: linear-gradient(90deg, #FFD700 0%, #FFF 50%, #FFD700 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; }
+        
+        .day-check { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .day-check:hover { transform: scale(1.05); border-color: #FFD700; }
+        .day-check.completed { background: linear-gradient(135deg, #FFD700 0%, #C5A000 100%); color: black; border: none; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+
+        #lock-screen { position: fixed; inset: 0; z-index: 100; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
+        #welcome-screen { position: fixed; inset: 0; z-index: 95; background: linear-gradient(180deg, #000 0%, #0a0a0a 100%); display: none; flex-direction: column; overflow-y: auto; }
+        #level-expired { position: fixed; inset: 0; z-index: 9950; background: #050505; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        
+        .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,215,0,0.3); border-radius: 50%; border-top-color: #FFD700; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .objective-card { transition: all 0.3s ease; cursor: pointer; }
+        .objective-card:hover { transform: translateY(-2px); border-color: #FFD700; }
+        .objective-card.selected { border-color: #FFD700; background: rgba(255, 215, 0, 0.1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+        
+        .week-card { transition: all 0.3s ease; }
+        .week-card.active { border-color: #FFD700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.2); animation: pulse-glow 2s infinite; }
+        .week-card.completed { border-color: #22c55e; background: rgba(34, 197, 94, 0.1); }
+        
+        .portion-visual { transition: all 0.3s ease; }
+        .portion-visual:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2); }
+        
+        /* PWA INSTALL BUTTON */
+        #pwa-install-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.8));
+            padding: 16px;
+            z-index: 9999;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,215,0,0.2);
+        }
+        #pwa-install-banner.show { transform: translateY(0); }
+        #pwa-install-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
+            color: black;
+            font-weight: bold;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+        #pwa-install-btn:hover { transform: scale(1.02); }
+        #pwa-dismiss-btn {
+            background: transparent;
+            color: #888;
+            border: none;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f0f0f; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    </style>
+</head>
+<body class="overflow-x-hidden pb-24">
+
+    <!-- PANTALLA DE BLOQUEO -->
+    <div id="lock-screen">
+        <div class="text-center p-8 max-w-sm w-full relative z-10">
+            <div class="mb-4 inline-block p-4 rounded-full bg-yellow-500/10 border border-yellow-500/20">
+                <i class="fas fa-crown text-gold text-4xl animate-pulse-slow"></i>
+            </div>
+            
+            <h1 class="text-3xl font-heading font-bold italic mb-1 tracking-widest text-white">TU MEJOR <span class="text-gold">VERSIÓN</span></h1>
+            <p class="text-gray-400 text-xs uppercase tracking-widest mb-4">Acceso Nivel 1</p>
+
+            <div class="px-2 mb-6">
+                <p class="text-[13px] italic text-gray-300 font-serif leading-relaxed">
+                    "La preparación de hoy es el éxito de mañana."
+                </p>
+            </div>
+            
+            <div class="bg-gray-900/60 border border-gray-800 p-4 rounded-xl mb-4">
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">TIPO DE PLAN:</p>
+                <p class="text-sm font-bold text-blue-400 italic flex items-center justify-center gap-2">
+                    <i class="fas fa-flag"></i> Plan General - México
+                </p>
+            </div>
+
+            <div class="bg-gray-900/60 border border-gray-800 p-4 rounded-xl mb-8">
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">OBJETIVO VIP:</p>
+                <p class="text-sm font-bold text-gold italic">Cocinar el domingo para la semana</p>
+            </div>
+
+            <div id="login-form">
+                <p class="text-[10px] text-gray-500 mb-2">INGRESA TU NÚMERO DE TELÉFONO</p>
+                <div class="relative mb-4">
+                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"><i class="fas fa-phone"></i></span>
+                    <input type="text" id="pass-input" placeholder="Ej. 7711234567" class="w-full bg-panel border border-gray-800 rounded-lg py-4 pl-12 pr-4 text-white font-bold focus:border-gold focus:outline-none placeholder:text-gray-600 transition-colors">
+                </div>
+                <button onclick="checkAccess()" id="btn-entrar" class="w-full bg-gold text-black font-bold py-4 rounded-lg uppercase tracking-wider font-heading hover:bg-yellow-400 transition shadow-[0_0_15px_rgba(255,215,0,0.2)]">
+                    Desbloquear Mi Plan
+                </button>
+                <p id="error-msg" class="text-red-500 text-xs mt-4 hidden bg-red-500/10 p-2 rounded"><i class="fas fa-exclamation-triangle"></i> Número incorrecto o dispositivo bloqueado.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE BIENVENIDA -->
+    <div id="welcome-screen">
+        <div class="min-h-screen py-8 px-5 relative">
+            <div class="max-w-sm mx-auto relative z-10">
+                
+                <div class="text-center mb-6 fade-in">
+                    <div class="inline-block mb-4">
+                        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gold to-yellow-600 flex items-center justify-center shadow-[0_0_30px_rgba(255,215,0,0.3)] animate-pulse-slow">
+                            <i class="fas fa-crown text-black text-3xl"></i>
+                        </div>
+                    </div>
+                    
+                    <h1 class="text-2xl font-heading font-bold italic mb-2 tracking-wide">
+                        ¡Bienvenido, <span class="shimmer-text">juan</span>!
+                    </h1>
+                    
+                    <div class="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-2 rounded-full mb-2">
+                        <i class="fas fa-layer-group text-gold text-sm"></i>
+                        <span class="text-gold font-bold text-sm uppercase tracking-wider">Nivel 1 Activado</span>
+                    </div>
+                    
+                    <div class="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/30 px-3 py-1 rounded-full mb-4">
+                        <i class="fas fa-flag text-blue-400 text-xs"></i>
+                        <span class="text-blue-400 text-xs">Plan General - México</span>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        ¡Estás comenzando tu transformación! El Nivel 1 establece los cimientos de tu nueva alimentación.
+                    </p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-5 mb-6 fade-in">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fas fa-bullseye text-gold"></i>
+                        <h2 class="font-heading font-bold text-white uppercase tracking-wide text-sm">Elige tu Micro-Objetivo</h2>
+                    </div>
+                    
+                    <div class="space-y-3" id="objectives-container">
+                        <div class="objective-card glass rounded-xl p-4 border border-gray-700" onclick="selectObjective(this, 'agua')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                    <i class="fas fa-tint text-blue-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-white font-bold text-sm">Hidratación Constante</p>
+                                    <p class="text-gray-500 text-xs">Beber agua regularmente cada día</p>
+                                </div>
+                                <i class="fas fa-check-circle text-gold text-lg opacity-0 transition-opacity"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="objective-card glass rounded-xl p-4 border border-gray-700" onclick="selectObjective(this, 'mealprep')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                                    <i class="fas fa-utensils text-green-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-white font-bold text-sm">Meal Prep Dominical</p>
+                                    <p class="text-gray-500 text-xs">Preparar mis comidas el día domingo</p>
+                                </div>
+                                <i class="fas fa-check-circle text-gold text-lg opacity-0 transition-opacity"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="objective-card glass rounded-xl p-4 border border-gray-700" onclick="selectObjective(this, 'dormir')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
+                                    <i class="fas fa-moon text-purple-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-white font-bold text-sm">Descanso Reparador</p>
+                                    <p class="text-gray-500 text-xs">Dormir mínimo 7 horas cada noche</p>
+                                </div>
+                                <i class="fas fa-check-circle text-gold text-lg opacity-0 transition-opacity"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="objective-card glass rounded-xl p-4 border border-gray-700" onclick="selectObjective(this, 'pasos')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center">
+                                    <i class="fas fa-walking text-orange-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-white font-bold text-sm">Movimiento Diario</p>
+                                    <p class="text-gray-500 text-xs">Sumar pasos activamente cada día</p>
+                                </div>
+                                <i class="fas fa-check-circle text-gold text-lg opacity-0 transition-opacity"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="continuarAlPlan()" id="btn-continuar" class="w-full py-4 bg-gradient-to-r from-gold to-yellow-500 rounded-xl text-black font-heading font-bold uppercase tracking-widest text-sm shadow-[0_0_30px_rgba(255,215,0,0.3)] transition-all fade-in disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <i class="fas fa-arrow-right mr-2"></i> COMENZAR MI TRANSFORMACIÓN
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE EXPIRACIÓN - NIVEL COMPLETADO -->
+    <div id="level-expired">
+        <div class="max-w-sm w-full relative z-10 px-4">
+            <!-- CELEBRACIÓN VISUAL -->
+            <div class="text-center mb-6">
+                <div class="relative inline-block">
+                    <div class="w-24 h-24 rounded-full bg-gradient-to-br from-gold to-yellow-600 flex items-center justify-center shadow-[0_0_40px_rgba(255,215,0,0.5)] animate-pulse-slow">
+                        <i class="fas fa-crown text-black text-4xl"></i>
+                    </div>
+                    <div class="absolute -top-2 -right-2 w-10 h-10 rounded-full bg-green-500 flex items-center justify-center border-2 border-black">
+                        <i class="fas fa-check text-white text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-heading font-bold text-white uppercase italic text-center mb-2">¡Nivel 1 Completado!</h2>
+            <p class="text-sm text-gray-400 text-center mb-6">Has terminado tu ciclo de 30 días. Es hora de evaluar tu progreso.</p>
+
+            <!-- RESUMEN DEL NIVEL -->
+            <div class="glass-panel rounded-xl p-4 mb-6">
+                <h3 class="text-gold font-bold text-xs uppercase tracking-widest mb-3 text-center">📊 Tu Logro Este Etapa</h3>
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="bg-black/40 rounded-lg p-3">
+                        <p class="text-xl font-bold text-white">1</p>
+                        <p class="text-[9px] text-gray-500 uppercase">Nivel</p>
+                    </div>
+                    <div class="bg-black/40 rounded-lg p-3">
+                        <p class="text-xl font-bold text-gold">30</p>
+                        <p class="text-[9px] text-gray-500 uppercase">Días</p>
+                    </div>
+                    <div class="bg-black/40 rounded-lg p-3">
+                        <p class="text-xl font-bold text-green-400">✓</p>
+                        <p class="text-[9px] text-gray-500 uppercase">Meta</p>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gray-800">
+                    <p class="text-[10px] text-gray-400 text-center">
+                        <strong class="text-gold">Cocinar el domingo para la semana</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- SIGUIENTE NIVEL -->
+            <div class="bg-gradient-to-r from-gold/20 via-yellow-500/20 to-gold/20 border-2 border-gold/50 rounded-xl p-5 mb-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-gold/10 rounded-full blur-2xl"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase tracking-widest">Siguiente Meta</p>
+                            <p class="text-lg font-heading font-bold text-gold italic">Nivel 2</p>
+                        </div>
+                        <div class="w-14 h-14 rounded-full bg-gold/30 flex items-center justify-center animate-bounce">
+                            <i class="fas fa-arrow-up text-gold text-2xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed">
+                        <i class="fas fa-star text-gold mr-1"></i> 
+                        Cada nivel es un paso más cerca de <strong class="text-white">Tu Mejor Versión</strong>. Tu coach tiene listo tu nuevo plan con nuevos desafíos.
+                    </p>
+                </div>
+            </div>
+
+            <!-- COMPARACIÓN VISUAL -->
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 rounded-full bg-gray-800 border-2 border-gray-600 flex items-center justify-center mb-2 opacity-50">
+                        <span class="text-xl font-bold text-gray-500">1</span>
+                    </div>
+                    <p class="text-[9px] text-gray-500">Completado</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <i class="fas fa-chevron-right text-gold text-xl animate-pulse"></i>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gold to-yellow-600 flex items-center justify-center mb-2 shadow-[0_0_20px_rgba(255,215,0,0.4)] animate-pulse-slow">
+                        <span class="text-2xl font-bold text-black">2</span>
+                    </div>
+                    <p class="text-[9px] text-gold font-bold">Tu Próximo Nivel</p>
+                </div>
+            </div>
+
+            <button onclick="contactForUpgrade()" class="w-full py-4 bg-gradient-to-r from-gold to-yellow-500 rounded-xl text-black font-heading font-bold uppercase tracking-widest text-sm shadow-[0_0_30px_rgba(255,215,0,0.3)] animate-pulse">
+                <i class="fas fa-rocket mr-2"></i> Pasar al Nivel 2
+            </button>
+
+            <p class="text-[10px] text-gray-500 text-center mt-4">
+                <i class="fas fa-comment-dots mr-1"></i> Contacta a tu coach para tu evaluación y nuevo plan
+            </p>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL DE LA APP -->
+    <div id="app-content" class="hidden opacity-0 transition-opacity duration-1000">
+        <header class="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/5">
+            <div class="px-5 py-4 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-heading font-bold italic">TU MEJOR <span class="text-gradient">VERSIÓN</span></h2>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Hola, juan</p>
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                     <div class="h-8 w-8 rounded-full bg-panel border border-gold/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-gold">j</span>
+                    </div>
+                     <div class="px-2 py-0.5 bg-gold text-black text-[8px] font-bold uppercase rounded tracking-wider shadow-lg">
+                        Nivel 1
+                    </div>
+                </div>
+            </div>
+            <div class="w-full h-1 bg-gray-900">
+                <div id="cycle-progress-bar" class="h-full bg-gold transition-all duration-1000" style="width: 0%"></div>
+            </div>
+        </header>
+
+        <!-- BADGE META DEL USUARIO -->
+        <div class="px-5 pt-4">
+            <div class="bg-gradient-to-r from-gold/20 to-yellow-500/10 border border-gold/30 rounded-xl p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full bg-gold/30 flex items-center justify-center animate-pulse-slow">
+                        <i class="fas fa-bullseye text-gold text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[9px] text-gray-400 uppercase tracking-widest">Mi Meta Este Nivel</p>
+                        <p class="text-gold font-bold text-sm mt-1">Cocinar el domingo para la semana</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="px-3 py-1 bg-gold/20 rounded-full">
+                            <p class="text-[9px] text-gold font-bold">Nivel 1</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gold/20 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-flag text-blue-400 text-xs"></i>
+                        <span class="text-[10px] text-gray-400">Plan General - México</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-[10px] text-gray-500">Progreso:</span>
+                        <span id="header-progress" class="text-[10px] text-gold font-bold">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESUMEN DE MACROS -->
+        <section class="p-5 pt-4">
+            <div class="glass rounded-2xl p-5 border-l-4 border-gold relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase">Enfoque Actual</p>
+                            <p class="text-sm font-heading font-bold text-white leading-tight">Cocinar el domingo para la semana</p>
+                        </div>
+                        <div class="text-right">
+                             <div class="inline-block bg-white/10 px-2 py-1 rounded border border-white/10">
+                                <p class="text-[9px] text-gold uppercase font-bold"><i class="far fa-calendar-alt mr-1"></i> Finaliza</p>
+                                <p id="end-date-text" class="text-[10px] text-white">...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2 text-center items-center">
+                         <div class="text-left col-span-1">
+                            <p class="text-xl font-bold text-gold leading-none">2517</p>
+                            <p class="text-[9px] text-gray-400 uppercase">Kcal</p>
+                        </div>
+                        <div class="bg-black/40 rounded p-1"><p class="text-white font-bold text-xs">174g</p><p class="text-[8px] text-gray-500">PRO</p></div>
+                        <div class="bg-black/40 rounded p-1"><p class="text-white font-bold text-xs">296g</p><p class="text-[8px] text-gray-500">CARB</p></div>
+                        <div class="bg-black/40 rounded p-1"><p class="text-white font-bold text-xs">71g</p><p class="text-[8px] text-gray-500">FAT</p></div>
+                    </div>
+                    
+                    <div class="mt-4 text-right mb-4">
+                         <span id="days-remaining-text" class="text-[10px] font-bold text-gold uppercase tracking-widest">Día 1 de 30</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/10">
+                        <div class="bg-black/50 border border-gold/20 rounded-lg p-2 text-center">
+                            <p class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Peso Inicial</p>
+                            <p class="text-sm font-bold text-white">79 <span class="text-[10px] text-gray-400 font-normal">kg</span></p>
+                        </div>
+                        <div class="bg-black/50 border border-gold/20 rounded-lg p-2 text-center">
+                            <p class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Estatura</p>
+                            <p class="text-sm font-bold text-white">1.69 <span class="text-[10px] text-gray-400 font-normal">m</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🆕 GUÍA VISUAL DE PORCIONES - SIN BÁSCULA -->
+        <section class="px-5 mb-4">
+            <div class="glass-panel rounded-2xl overflow-hidden">
+                <button onclick="togglePortionsGuide()" class="w-full p-4 flex items-center justify-between bg-gradient-to-r from-gold/10 to-transparent border-b border-gray-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center">
+                            <i class="fas fa-eye text-gold"></i>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="font-heading font-bold text-white text-sm">GUÍA VISUAL DE PORCIONES</h3>
+                            <p class="text-[10px] text-gray-400">Mide sin báscula usando referencias cotidianas</p>
+                        </div>
+                    </div>
+                    <i id="portions-chevron" class="fas fa-chevron-down text-gold transition-transform duration-300"></i>
+                </button>
+                
+                <div id="portions-content" class="hidden">
+                    <!-- PROTEÍNAS -->
+                    <div class="p-4 border-b border-gray-800">
+                        <h4 class="text-red-400 font-bold text-xs uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fas fa-drumstick-bite"></i> Proteínas
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-red-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🃏</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">100g de Carne/Pollo</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de una baraja</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-red-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">✋</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">120-150g de Pollo</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de tu palma</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-red-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🥚</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">1 Huevo = 6g proteína</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño normal</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-red-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🧊</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">30g de Queso</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de un dado</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CARBOHIDRATOS -->
+                    <div class="p-4 border-b border-gray-800">
+                        <h4 class="text-yellow-400 font-bold text-xs uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fas fa-bread-slice"></i> Carbohidratos
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-yellow-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🍚</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">1 taza de Arroz (150g)</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de un puño cerrado</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-yellow-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🌮</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">2 Tortillas medianas</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de tu mano abierta</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-yellow-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🥔</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">1 Papa mediana (150g)</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de un mouse</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-yellow-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🍌</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">1 Plátano mediano</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de un lápiz largo</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VERDURAS Y FRUTAS -->
+                    <div class="p-4 border-b border-gray-800">
+                        <h4 class="text-green-400 font-bold text-xs uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fas fa-leaf"></i> Verduras y Frutas
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-green-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🥗</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">1 taza de Verduras</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de un puño cerrado</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-green-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🎾</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">1 Fruta mediana</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de una pelota de tenis</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-green-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🥑</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">1/4 de Aguacate</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de una pelota de golf</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-green-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🫐</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">1 taza de Frutos</p>
+                                        <p class="text-[9px] text-gray-500">Lo que cabe en tu mano</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GRASAS -->
+                    <div class="p-4 border-b border-gray-800">
+                        <h4 class="text-purple-400 font-bold text-xs uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fas fa-droplet"></i> Grasas Saludables
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-purple-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🥄</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">1 cda de Aceite (15ml)</p>
+                                        <p class="text-[9px] text-gray-500">Tamaño de tu pulgar</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portion-visual bg-black/40 rounded-xl p-3 border border-purple-500/20">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-2xl">🥜</span>
+                                    <div>
+                                        <p class="text-white font-bold text-xs">30g de Nueces</p>
+                                        <p class="text-[9px] text-gray-500">Lo que cabe en tu mano</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RESUMEN RÁPIDO -->
+                    <div class="p-4 bg-gold/5">
+                        <h4 class="text-gold font-bold text-xs uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fas fa-lightbulb"></i> Referencia Rápida
+                        </h4>
+                        <div class="grid grid-cols-4 gap-2 text-center">
+                            <div class="bg-black/40 rounded-lg p-2">
+                                <span class="text-xl">👊</span>
+                                <p class="text-[9px] text-gray-300 mt-1">1 Puño = 1 taza</p>
+                            </div>
+                            <div class="bg-black/40 rounded-lg p-2">
+                                <span class="text-xl">✋</span>
+                                <p class="text-[9px] text-gray-300 mt-1">1 Palma = 120g</p>
+                            </div>
+                            <div class="bg-black/40 rounded-lg p-2">
+                                <span class="text-xl">👍</span>
+                                <p class="text-[9px] text-gray-300 mt-1">1 Pulgar = 1 cda</p>
+                            </div>
+                            <div class="bg-black/40 rounded-lg p-2">
+                                <span class="text-xl">🤏</span>
+                                <p class="text-[9px] text-gray-300 mt-1">1 Puñado = 30g</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NOTA: ESTILO DE PLAN -->
+        <section class="px-5 mb-4">
+            
+            <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-leaf text-green-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-green-400 text-sm mb-1">🌱 Alimentación 100% Natural</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">Este plan NO incluye proteína en polvo ni suplementos. Todas las comidas son preparadas con ingredientes reales y naturales.</p>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+
+        <!-- TABS DE NAVEGACIÓN -->
+        <div class="px-5 mb-6 sticky top-[70px] z-30">
+            <div class="flex bg-panel p-1 rounded-xl border border-gray-800 shadow-lg overflow-x-auto">
+                <button onclick="switchTab('A')" id="btn-A" class="tab-btn active flex-1 py-3 px-2 rounded-lg text-xs font-heading uppercase tracking-wide whitespace-nowrap">
+                    Var 1 <span class="block text-[8px] font-sans normal-case opacity-70">Lun Mié Vie Dom</span>
+                </button>
+                <button onclick="switchTab('B')" id="btn-B" class="tab-btn flex-1 py-3 px-2 rounded-lg text-xs font-heading uppercase tracking-wide ml-1 whitespace-nowrap">
+                    Var 2 <span class="block text-[8px] font-sans normal-case opacity-70">Mar Jue Sáb</span>
+                </button>
+                <button onclick="switchTab('Reto')" id="btn-Reto" class="tab-btn flex-1 py-3 px-2 rounded-lg text-xs font-heading uppercase tracking-wide ml-1 text-red-400 border-red-500/30 whitespace-nowrap">
+                    <i class="fas fa-fire mr-1"></i>RETO
+                </button>
+            </div>
+        </div>
+
+        <!-- VARIACIÓN 1 -->
+        <div id="content-A" class="px-5 space-y-4 fade-in">
+            <div class="bg-gold/10 border border-gold/30 rounded-xl p-3 mb-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-calendar-day text-gold"></i>
+                        <span class="text-xs font-bold text-white">Variación 1</span>
+                    </div>
+                    <span class="text-[10px] text-gold">Lunes, Miércoles, Viernes, Domingo</span>
+                </div>
+            </div>
+            
+            <!-- NOTA ESPECIAL DOMINGO -->
+            <div class="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-500/30 rounded-xl p-4 mb-2">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-orange-500/30 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-utensils text-orange-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-orange-400 text-sm mb-1">🍕 ¡Domingo de Comida Trampa!</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">Los domingos puedes disfrutar de <strong class="text-white">UNA comida libre</strong> de tu elección. Elige tu platillo favorito y disfrútalo sin culpa. Es tu recompensa semanal por el esfuerzo.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Huevos a la mexicana con frijoles, tortillas y aguacate. Ingredientes con medidas: 5 claras de huevo + 2 yemas (aprox. 26g de proteína), 1/2 taza de frijoles cocidos (aprox. 100g, 7g de proteína, 20g de carbohidratos), 3 tortillas de maíz medianas (aprox. 45g de carbohidratos). Acompañar con 1/2 taza de pico de gallo (jitomate, cebolla, chile), 1/2 de aguacate mediano (aprox. 15g de grasa) y 1 taza de papaya picada (aprox. 15g de carbohidratos). Cocinar con 1 cucharadita de aceite vegetal (5ml).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Batido energético de avena, plátano y leche. Ingredientes con medidas: 1.5 tazas de leche descremada (aprox. 12g de proteína), 1 plátano grande (aprox. 30g de carbohidratos), 3/4 taza de avena en hojuelas (en seco, aprox. 60g, 40g de carbohidratos).</p></div>
+            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Pechuga de pollo asada con arroz integral y ejotes salteados. Ingredientes con medidas: 220g de pechuga de pollo asada (aprox. 55g de proteína), 1.5 tazas de arroz integral cocido (aprox. 225g, 60g de carbohidratos). Acompañar con 1 taza de ejotes salteados con 1 cucharada de aceite de oliva (15ml, aprox. 14g de grasa).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Tostadas de atún con aguacate. Ingredientes con medidas: 1 lata de atún en agua, drenado (aprox. 100g, 25g de proteína), 3 tostadas horneadas (aprox. 45g de carbohidratos). Acompañar con 1/2 de aguacate mediano (aprox. 15g de grasa) y 1/2 taza de pepino y zanahoria rallada.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Picadillo de res con papa y zanahoria, acompañado de tortillas. Ingredientes con medidas: 200g de carne de res molida magra (90/10, aprox. 45g de proteína), 1 papa mediana (aprox. 170g, 30g de carbohidratos), 2 tortillas de maíz medianas (aprox. 30g de carbohidratos). Guisado con 1/2 taza de zanahoria y chícharos picados, y 1 cucharada de aceite vegetal (15ml, aprox. 14g de grasa).</p></div>
+        </div>
+
+        <!-- VARIACIÓN 2 -->
+        <div id="content-B" class="px-5 space-y-4 hidden fade-in">
+            <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 mb-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-calendar-day text-blue-400"></i>
+                        <span class="text-xs font-bold text-white">Variación 2</span>
+                    </div>
+                    <span class="text-[10px] text-blue-400">Martes, Jueves, Sábado</span>
+                </div>
+            </div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Chilaquiles de pollo con frijoles y aguacate. Ingredientes con medidas: 150g de pechuga de pollo deshebrada (aprox. 38g de proteína), 100g de tortillas de maíz (peso seco, aprox. 8-10 tortillas), ligeramente doradas en comal o al horno, con salsa verde o roja (aprox. 70g de carbohidratos), 1/2 taza de frijoles refritos (con 1 cucharadita de aceite, aprox. 100g, 7g de proteína, 20g de carbohidratos, 5g de grasa). Acompañar con 1/2 de aguacate mediano (aprox. 15g de grasa) y cebolla y cilantro picados al gusto.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Queso panela con jícama y pepino. Ingredientes con medidas: 100g de queso panela (aprox. 20g de proteína, 10g de grasa), 1 taza de jícama picada (aprox. 10g de carbohidratos), 1 taza de pepino rebanado.</p></div>
+            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Bistec de res en salsa verde con arroz, frijoles y calabacitas. Ingredientes con medidas: 180g de bistec de res magro (ej. sirloin, arrachera, aprox. 45g de proteína), 1.5 tazas de arroz blanco cocido (aprox. 225g, 67g de carbohidratos), 1/2 taza de frijoles de olla (aprox. 100g, 7g de proteína, 20g de carbohidratos). Acompañar con 1 taza de calabacitas picadas en salsa verde. Guisado con 1 cucharada de aceite vegetal (15ml, aprox. 14g de grasa).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Yogur natural con granola, fruta y nueces. Ingredientes con medidas: 1.5 tazas de yogur natural sin azúcar (aprox. 15g de proteína), 1/2 taza de granola (sin azúcares añadidos, aprox. 50g, 30g de carbohidratos, 10g de grasa), 1/2 taza de mango picado (aprox. 15g de carbohidratos), 1/4 taza de nueces (aprox. 30g, 15g de grasa).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800 relative group"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200 tracking-wide">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Tostadas de pollo deshebrado con crema ligera y queso fresco. Ingredientes con medidas: 150g de pechuga de pollo deshebrada (aprox. 38g de proteína), 3 tostadas horneadas (aprox. 45g de carbohidratos). Acompañar con 2 cucharadas de crema ligera (30g, aprox. 3g de grasa), 50g de queso fresco rallado (aprox. 10g de proteína, 5g de grasa) y 1 taza de lechuga picada, rábanos y jitomate.</p></div>
+        </div>
+
+        <!-- RETO DE ELIMINACIÓN PAULATINA -->
+        <div id="content-Reto" class="px-5 space-y-5 hidden fade-in pb-8">
+            <div class="text-center py-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/20 border border-red-500/30 mb-4">
+                    <i class="fas fa-fire-flame-curved text-red-500 text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-heading font-bold text-white uppercase italic mb-2">RETO DE ELIMINACIÓN</h2>
+                <p class="text-xs text-gray-400">30 días de transformación paso a paso</p>
+            </div>
+
+            <!-- FRASE EMOCIONAL -->
+            <div class="bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-red-500/20 border border-purple-500/30 rounded-xl p-5 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiLz48L2c+PC9zdmc+')] opacity-5"></div>
+                <div class="relative z-10">
+                    <p class="text-sm text-gray-300 italic font-serif leading-relaxed mb-3">
+                        "Cada elección que haces hoy es una carta que le escribes a tu <span class="text-gold font-bold not-italic">Mejor Versión</span>. Este reto no es sobre privarte, es sobre <span class="text-purple-400 font-bold not-italic">elegirte a ti mismo</span>."
+                    </p>
+                    <p class="text-[10px] text-gold uppercase tracking-widest font-bold">— Tu Mejor Versión te espera —</p>
+                </div>
+            </div>
+
+            <!-- APOYO EN EL PLAN -->
+            <div class="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-xl p-4">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-cyan-500/30 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-lightbulb text-cyan-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-cyan-400 text-sm mb-1">💡 ¿Antojo de algo rico?</h4>
+                        <p class="text-xs text-gray-300 leading-relaxed">Apóyate en tu plan de alimentación? ahí encontrarás <strong class="text-white">snacks saludables y deliciosos</strong> que puedes disfrutar sin culpa. Tus Snacks AM y PM son tus aliados.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECOMPENSA SEMANAL -->
+            <div class="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-xl p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full bg-green-500/30 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-gift text-green-400 text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-green-400 text-sm">🎉 Tu Recompensa Semanal</h4>
+                        <p class="text-xs text-gray-300 mt-1">Cada <strong class="text-white">domingo</strong> disfruta <strong class="text-white">UNA comida trampa</strong> sin culpa. ¡Te lo mereces!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GUÍA VISUAL DE PROGRESO -->
+            <div class="glass-panel rounded-xl overflow-hidden">
+                <div class="bg-gradient-to-r from-gold/20 to-transparent p-4 border-b border-gray-800">
+                    <h3 class="font-heading font-bold text-gold text-sm flex items-center gap-2">
+                        <i class="fas fa-route"></i> TU CAMINO DE 4 SEMANAS
+                    </h3>
+                    <p class="text-[10px] text-gray-400 mt-1">Elimina poco a poco, sin privarte de golpe</p>
+                </div>
+
+                <!-- SEMANA 1 -->
+                <div class="p-4 border-b border-gray-800">
+                    <div class="flex items-start gap-4">
+                        <div class="flex flex-col items-center">
+                            <div id="week1-indicator" class="w-12 h-12 rounded-full bg-red-500/20 border-2 border-red-500/50 flex items-center justify-center text-red-400 font-bold text-sm">
+                                1
+                            </div>
+                            <div class="w-0.5 h-8 bg-gray-700 mt-2"></div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h4 class="font-bold text-white text-sm">Semana 1: Reducir Porciones</h4>
+                                <span class="text-[9px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">INICIO</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">No elimines nada todavía. Solo <strong class="text-white">reduce a la mitad</strong> las porciones de:</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="flex items-center gap-2 bg-black/30 rounded-lg p-2">
+                                    <span>🍬</span>
+                                    <span class="text-xs text-gray-300">Azúcar y dulces</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-black/30 rounded-lg p-2">
+                                    <span>🍺</span>
+                                    <span class="text-xs text-gray-300">Alcohol</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-black/30 rounded-lg p-2">
+                                    <span>🍞</span>
+                                    <span class="text-xs text-gray-300">Pan blanco</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-black/30 rounded-lg p-2">
+                                    <span>🍟</span>
+                                    <span class="text-xs text-gray-300">Frituras</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 bg-gold/10 rounded-lg p-2 border border-gold/20">
+                                <p class="text-[10px] text-gold"><i class="fas fa-lightbulb mr-1"></i> <strong>Tip:</strong> Si tomas 2 refrescos, toma 1. Si comes 4 tortillas, come 2.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEMANA 2 -->
+                <div class="p-4 border-b border-gray-800">
+                    <div class="flex items-start gap-4">
+                        <div class="flex flex-col items-center">
+                            <div id="week2-indicator" class="w-12 h-12 rounded-full bg-orange-500/20 border-2 border-orange-500/50 flex items-center justify-center text-orange-400 font-bold text-sm">
+                                2
+                            </div>
+                            <div class="w-0.5 h-8 bg-gray-700 mt-2"></div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h4 class="font-bold text-white text-sm">Semana 2: Sustituir</h4>
+                                <span class="text-[9px] bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded-full">CAMBIO</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Ahora <strong class="text-white">cambia lo procesado por natural</strong>:</p>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2 bg-black/30 rounded-lg p-2">
+                                    <span class="text-red-400 line-through text-xs">Refresco</span>
+                                    <i class="fas fa-arrow-right text-gray-500 text-[10px]"></i>
+                                    <span class="text-green-400 text-xs">Agua con limón</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-black/30 rounded-lg p-2">
+                                    <span class="text-red-400 line-through text-xs">Pan dulce</span>
+                                    <i class="fas fa-arrow-right text-gray-500 text-[10px]"></i>
+                                    <span class="text-green-400 text-xs">Fruta fresca</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-black/30 rounded-lg p-2">
+                                    <span class="text-red-400 line-through text-xs">Papas fritas</span>
+                                    <i class="fas fa-arrow-right text-gray-500 text-[10px]"></i>
+                                    <span class="text-green-400 text-xs">Nueces o cacahuates</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEMANA 3 -->
+                <div class="p-4 border-b border-gray-800">
+                    <div class="flex items-start gap-4">
+                        <div class="flex flex-col items-center">
+                            <div id="week3-indicator" class="w-12 h-12 rounded-full bg-yellow-500/20 border-2 border-yellow-500/50 flex items-center justify-center text-yellow-400 font-bold text-sm">
+                                3
+                            </div>
+                            <div class="w-0.5 h-8 bg-gray-700 mt-2"></div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h4 class="font-bold text-white text-sm">Semana 3: Eliminar entre semana</h4>
+                                <span class="text-[9px] bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full">AVANCE</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">De <strong class="text-white">lunes a sábado</strong> elimina completamente:</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-2 text-center">
+                                    <span class="text-lg">🚫🍬</span>
+                                    <p class="text-[10px] text-red-400 mt-1">Sin azúcar añadida</p>
+                                </div>
+                                <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-2 text-center">
+                                    <span class="text-lg">🚫🍺</span>
+                                    <p class="text-[10px] text-red-400 mt-1">Sin alcohol</p>
+                                </div>
+                                <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-2 text-center">
+                                    <span class="text-lg">🚫🍔</span>
+                                    <p class="text-[10px] text-red-400 mt-1">Sin chatarra</p>
+                                </div>
+                                <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-2 text-center">
+                                    <span class="text-lg">🚫🍞</span>
+                                    <p class="text-[10px] text-red-400 mt-1">Sin harinas refinadas</p>
+                                </div>
+                            </div>
+                            <div class="mt-3 bg-green-500/10 rounded-lg p-2 border border-green-500/20">
+                                <p class="text-[10px] text-green-400"><i class="fas fa-calendar-day mr-1"></i> <strong>¡Ojo!</strong> El domingo sigue siendo tu día de comida trampa.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEMANA 4 -->
+                <div class="p-4">
+                    <div class="flex items-start gap-4">
+                        <div class="flex flex-col items-center">
+                            <div id="week4-indicator" class="w-12 h-12 rounded-full bg-green-500/20 border-2 border-green-500/50 flex items-center justify-center text-green-400 font-bold text-sm">
+                                4
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h4 class="font-bold text-white text-sm">Semana 4: ¡Consolidación!</h4>
+                                <span class="text-[9px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">META</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Mantén la eliminación <strong class="text-white">toda la semana</strong> excepto domingo:</p>
+                            <div class="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg p-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-check-circle text-green-400"></i>
+                                        <span class="text-xs text-white font-bold">¡Estilo de vida logrado!</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-lg">🏆</span>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-gray-400 mt-2">Tu cuerpo ya se adaptó. Los domingos siguen siendo tu recompensa.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INSTRUCCIONES SIMPLES -->
+            <div class="glass-panel p-4 rounded-xl">
+                <h3 class="font-heading font-bold text-white text-sm mb-3 flex items-center gap-2">
+                    <i class="fas fa-list-check text-gold"></i> REGLAS SIMPLES
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3 bg-black/30 rounded-lg p-3">
+                        <div class="w-6 h-6 rounded-full bg-blue-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-xs font-bold text-blue-400">1</span>
+                        </div>
+                        <p class="text-xs text-gray-300"><strong class="text-white">No te saltes semanas.</strong> Cada semana prepara tu cuerpo para la siguiente.</p>
+                    </div>
+                    <div class="flex items-start gap-3 bg-black/30 rounded-lg p-3">
+                        <div class="w-6 h-6 rounded-full bg-blue-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-xs font-bold text-blue-400">2</span>
+                        </div>
+                        <p class="text-xs text-gray-300"><strong class="text-white">Si te equivocas un día,</strong> no te castigues. Al día siguiente continúa normal.</p>
+                    </div>
+                    <div class="flex items-start gap-3 bg-black/30 rounded-lg p-3">
+                        <div class="w-6 h-6 rounded-full bg-blue-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-xs font-bold text-blue-400">3</span>
+                        </div>
+                        <p class="text-xs text-gray-300"><strong class="text-white">El domingo es sagrado.</strong> Disfruta tu comida trampa sin culpa.</p>
+                    </div>
+                    <div class="flex items-start gap-3 bg-black/30 rounded-lg p-3">
+                        <div class="w-6 h-6 rounded-full bg-blue-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-xs font-bold text-blue-400">4</span>
+                        </div>
+                        <p class="text-xs text-gray-300"><strong class="text-white">Bebe agua.</strong> Mínimo 2 litros diarios para ayudar a tu cuerpo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHECKLIST DIARIO -->
+            <div class="glass-panel p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gold font-heading font-bold text-sm flex items-center gap-2">
+                        <i class="fas fa-calendar-check"></i> TU PROGRESO DIARIO
+                    </h3>
+                    <span id="progress-text" class="text-white font-bold text-sm bg-gold/20 px-3 py-1 rounded-full">0%</span>
+                </div>
+                <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden mb-4">
+                    <div id="progress-bar" class="bg-gradient-to-r from-gold to-yellow-500 h-full transition-all duration-700" style="width: 0%"></div>
+                </div>
+                <p class="text-[10px] text-gray-500 mb-3">Toca cada día que cumpliste con el reto:</p>
+                <div id="days-grid" class="grid grid-cols-6 gap-2"></div>
+            </div>
+        </div>
+
+        <!-- LISTA DE SÚPER -->
+        <section class="p-5 mt-4" id="shopping-list-section">
+            <div class="glass rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-heading font-bold text-gold flex items-center gap-2">
+                        <i class="fas fa-shopping-basket"></i> LISTA DE SÚPER
+                    </h3>
+                    <span class="text-[9px] bg-gold/20 text-gold px-2 py-1 rounded-full">
+                        <i class="fas fa-calendar-alt mr-1"></i> Para 1 semana
+                    </span>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <i class="fas fa-drumstick-bite text-red-400 text-xs"></i>
+                        </div>
+                        <p class="font-bold text-white uppercase text-[10px]">Proteínas</p>
+                    </div>
+                    <div class="pl-8">
+                        <p class="text-xs text-gray-300 leading-relaxed">Pechuga de pollo, Huevos, Carne de res molida magra (90/10), Atún en agua, Queso panela, Leche descremada, Yogur natural sin azúcar, Bistec de res magro (ej. sirloin, arrachera), Queso fresco, Crema ligera.</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-6 h-6 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                            <i class="fas fa-bread-slice text-yellow-400 text-xs"></i>
+                        </div>
+                        <p class="font-bold text-white uppercase text-[10px]">Carbohidratos</p>
+                    </div>
+                    <div class="pl-8">
+                        <p class="text-xs text-gray-300 leading-relaxed">Tortillas de maíz, Frijoles (secos o enlatados), Arroz integral, Arroz blanco, Avena en hojuelas, Plátanos, Papaya, Tostadas horneadas, Papa, Granola (sin azúcares añadidos), Mango.</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <i class="fas fa-leaf text-green-400 text-xs"></i>
+                        </div>
+                        <p class="font-bold text-white uppercase text-[10px]">Verduras y Frutas</p>
+                    </div>
+                    <div class="pl-8">
+                        <p class="text-xs text-gray-300 leading-relaxed">Jitomates (tomates), Cebolla, Chiles (serrano/jalapeño), Aguacate, Brócoli, Zanahoria, Chayote, Ejotes, Pepino, Jícama, Pimientos (rojo, verde, amarillo), Chícharos (guisantes), Calabacitas (calabacín), Cilantro, Limones, Rábanos, Lechuga, Nueces, Nopales.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="h-10"></div>
+    </div>
+
+    <script>
+        const CLIENT_PHONE = "5535766379"; 
+        const MASTER_KEY = "INFIT2026PRO"; 
+        const userName = "juan";
+        const userLevel = 1;
+        const startDate = new Date("2026-03-30T00:00:00");
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 29);
+        
+        const today = new Date();
+        const diffTime = today - startDate;
+        const dayOfCycle = diffTime < 0 ? 1 : Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const isExpired = dayOfCycle > 30;
+
+        let selectedObjective = null;
+        let progressData = Array(30).fill(false);
+        const userId = userName.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAv1BfTCiQWgPXvtpMW14RdhbLyY4yGtiY",
+            authDomain: "infit-reto.firebaseapp.com",
+            databaseURL: "https://infit-reto-default-rtdb.firebaseio.com",
+            projectId: "infit-reto",
+            storageBucket: "infit-reto.firebasestorage.app",
+            messagingSenderId: "881118508637",
+            appId: "1:881118508637:web:26d5487e848aa4cd2d7fb4"
+        };
+
+        let db;
+
+        window.onload = () => {
+            if (isExpired) {
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('welcome-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'none';
+                document.getElementById('level-expired').style.display = 'flex';
+                return;
+            }
+
+            try {
+                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+            } catch (e) { console.error("Firebase init err:", e); }
+
+            const localToken = localStorage.getItem('infit_token_' + userId);
+            if (localToken === 'authorized') {
+                const welcomeComplete = localStorage.getItem('infit_welcome_' + userId);
+                if (welcomeComplete === 'done') {
+                    launchApp();
+                } else {
+                    showWelcomeScreen();
+                }
+            }
+        };
+
+        async function checkAccess() {
+            const inputRaw = document.getElementById('pass-input').value.trim();
+            const inputPhone = inputRaw.replace(/\D/g, ''); 
+            const inputMaster = inputRaw.toUpperCase();
+
+            document.getElementById('error-msg').classList.add('hidden');
+            
+            if (inputMaster === MASTER_KEY) {
+                showWelcomeScreen(true); 
+                return;
+            }
+
+            if (inputPhone === CLIENT_PHONE) {
+                verifyDeviceLock();
+            } else {
+                showError("Número incorrecto.");
+            }
+        }
+
+        function verifyDeviceLock() {
+            const btnForm = document.getElementById('login-form');
+            const loader = document.getElementById('login-loader');
+            btnForm.style.display = 'none';
+            loader.style.display = 'flex';
+
+            let currentDeviceId = localStorage.getItem('infit_device_id');
+            if (!currentDeviceId) {
+                currentDeviceId = 'xxxx-xxxx-4xxx-yxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+                localStorage.setItem('infit_device_id', currentDeviceId);
+            }
+
+            if(!db) { finishLogin(); return; }
+
+            const deviceRef = db.ref('users/' + userId + '/deviceId');
+            deviceRef.once('value')
+                .then((snapshot) => {
+                    const savedDevice = snapshot.val();
+                    if (!savedDevice) {
+                        deviceRef.set(currentDeviceId);
+                        finishLogin();
+                    } else if (savedDevice === currentDeviceId) {
+                        finishLogin();
+                    } else {
+                        loader.style.display = 'none';
+                        btnForm.style.display = 'block';
+                        showError("Plan vinculado a otro celular.");
+                    }
+                })
+                .catch(err => { finishLogin(); });
+        }
+
+        function finishLogin() {
+            localStorage.setItem('infit_token_' + userId, 'authorized');
+            showWelcomeScreen();
+        }
+
+        function showWelcomeScreen(isAdmin) {
+            document.getElementById('lock-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('welcome-screen').style.display = 'flex';
+            }, 500);
+        }
+
+        function selectObjective(element, objectiveKey) {
+            document.querySelectorAll('.objective-card').forEach(card => {
+                card.classList.remove('selected');
+                card.querySelector('.fa-check-circle').style.opacity = '0';
+            });
+            
+            element.classList.add('selected');
+            element.querySelector('.fa-check-circle').style.opacity = '1';
+            
+            selectedObjective = objectiveKey;
+            document.getElementById('btn-continuar').disabled = false;
+        }
+
+        function continuarAlPlan() {
+            if (!selectedObjective) return;
+            
+            localStorage.setItem('infit_objective_' + userId, selectedObjective);
+            localStorage.setItem('infit_welcome_' + userId, 'done');
+            
+            const welcomeScreen = document.getElementById('welcome-screen');
+            welcomeScreen.style.opacity = '0';
+            welcomeScreen.style.transition = 'opacity 0.5s';
+            
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#FFD700', '#FFFFFF', '#FDB931'] });
+            
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                launchApp();
+            }, 500);
+        }
+
+        function launchApp() {
+            document.getElementById('app-content').classList.remove('hidden');
+            document.getElementById('app-content').style.opacity = '1';
+            initLevelSystem();
+            if(db) initFirebaseReto();
+        }
+
+        function showError(msg) {
+            const errEl = document.getElementById('error-msg');
+            errEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + msg;
+            errEl.classList.remove('hidden');
+        }
+
+        function initLevelSystem() {
+            const options = { day: 'numeric', month: 'short' };
+            const dateStr = endDate.toLocaleDateString('es-ES', options).toUpperCase().replace('.', '');
+            document.getElementById('end-date-text').innerText = dateStr;
+
+            let cyclePercent = (dayOfCycle / 30) * 100;
+            if(cyclePercent > 100) cyclePercent = 100;
+            document.getElementById('cycle-progress-bar').style.width = cyclePercent + '%';
+            document.getElementById('days-remaining-text').innerText = 'DÍA ' + dayOfCycle + ' DE 30';
+        }
+
+        function initFirebaseReto() {
+            db.ref('users/' + userId).once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.progress) progressData = data.progress;
+                renderGrid();
+                updateStats();
+            });
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('days-grid');
+            grid.innerHTML = '';
+            progressData.forEach((completed, index) => {
+                const dayDiv = document.createElement('div');
+                let classes = "day-check h-10 rounded-lg flex flex-col items-center justify-center border border-gray-700 bg-black/40 relative overflow-hidden select-none";
+                
+                if (completed) {
+                    classes += " completed";
+                    dayDiv.innerHTML = '<i class="fas fa-check text-xs"></i>';
+                } else {
+                    dayDiv.innerHTML = '<span class="text-gray-500 font-heading text-xs font-bold">' + (index+1) + '</span>';
+                }
+                dayDiv.className = classes;
+                
+                if(index < dayOfCycle) {
+                    dayDiv.onclick = () => toggleDay(index);
+                } else {
+                    dayDiv.style.opacity = "0.5";
+                    dayDiv.style.cursor = "not-allowed";
+                }
+                grid.appendChild(dayDiv);
+            });
+        }
+
+        function toggleDay(index) {
+            progressData[index] = !progressData[index];
+            if (progressData[index]) {
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 }, colors: ['#FFD700', '#FFFFFF'] });
+            }
+            if (db) {
+                db.ref('users/' + userId).update({
+                    name: userName,
+                    progress: progressData,
+                    lastUpdate: new Date().toISOString()
+                });
+            }
+            renderGrid();
+            updateStats();
+        }
+
+        function updateStats() {
+            const completedCount = progressData.filter(Boolean).length;
+            const percentage = Math.round((completedCount / 30) * 100);
+            document.getElementById('progress-text').textContent = percentage + '%';
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            const headerProgress = document.getElementById('header-progress');
+            if(headerProgress) headerProgress.textContent = percentage + '%';
+        }
+
+        function togglePortionsGuide() {
+            const content = document.getElementById('portions-content');
+            const chevron = document.getElementById('portions-chevron');
+            if(content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                chevron.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function contactForUpgrade() {
+            Swal.fire({
+                title: 'Evaluación',
+                text: 'Contacta a tu coach para continuar.',
+                icon: 'info',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#FFD700',
+                background: '#111',
+                color: '#fff'
+            });
+        }
+
+        function switchTab(tab) {
+            document.getElementById('btn-A').classList.remove('active');
+            document.getElementById('btn-B').classList.remove('active');
+            document.getElementById('btn-Reto').classList.remove('active');
+            
+            document.getElementById('content-A').classList.add('hidden');
+            document.getElementById('content-B').classList.add('hidden');
+            document.getElementById('content-Reto').classList.add('hidden');
+            document.getElementById('shopping-list-section').classList.remove('hidden');
+
+            document.getElementById('btn-' + tab).classList.add('active');
+            document.getElementById('content-' + tab).classList.remove('hidden');
+            
+            if(tab === 'Reto') {
+                document.getElementById('shopping-list-section').classList.add('hidden');
+            }
+            
+            window.scrollTo({top: 300, behavior: 'smooth'});
+        }
+
+        // ========== PWA INSTALLATION ==========
+        let deferredPrompt;
+        let isPWAInstalled = false;
+
+        // Check if already installed
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            isPWAInstalled = true;
+        }
+
+        // Create and inject manifest
+        function createManifest() {
+            const manifest = {
+                name: 'INFIT VIP - juan',
+                short_name: 'INFIT juan',
+                description: 'Plan de alimentación personalizado - Tu Mejor Versión',
+                start_url: window.location.href,
+                display: 'standalone',
+                background_color: '#000000',
+                theme_color: '#FFD700',
+                orientation: 'portrait',
+                icons: [
+                    {
+                        src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iIzAwMCIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI1MCIgeT0iNTUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiNGRkQ3MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5WPC90ZXh0Pjwvc3ZnPg==',
+                        sizes: '96x96',
+                        type: 'image/svg+xml',
+                        purpose: 'any maskable'
+                    },
+                    {
+                        src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iIzAwMCIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI1MCIgeT0iNTUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiNGRkQ3MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5WPC90ZXh0Pjwvc3ZnPg==',
+                        sizes: '192x192',
+                        type: 'image/svg+xml',
+                        purpose: 'any maskable'
+                    },
+                    {
+                        src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iIzAwMCIgc3Ryb2tlPSIjRkZENzAwIiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI1MCIgeT0iNTUiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiNGRkQ3MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5WPC90ZXh0Pjwvc3ZnPg==',
+                        sizes: '512x512',
+                        type: 'image/svg+xml',
+                        purpose: 'any maskable'
+                    }
+                ],
+                categories: ['health', 'fitness', 'lifestyle'],
+                lang: 'es',
+                dir: 'ltr'
+            };
+            
+            const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = manifestUrl;
+            document.head.appendChild(link);
+        }
+
+        // Create and register Service Worker
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    const CACHE_NAME = 'infit-juan-v1';
+                    const urlsToCache = [
+                        window.location.href
+                    ];
+
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => cache.addAll(urlsToCache))
+                        );
+                        self.skipWaiting();
+                    });
+
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => {
+                                    if (response) return response;
+                                    return fetch(event.request)
+                                        .then(response => {
+                                            if(!response || response.status !== 200 || response.type !== 'basic') {
+                                                return response;
+                                            }
+                                            const responseToCache = response.clone();
+                                            caches.open(CACHE_NAME)
+                                                .then(cache => {
+                                                    cache.put(event.request, responseToCache);
+                                                });
+                                            return response;
+                                        });
+                                })
+                                .catch(() => {
+                                    return caches.match(window.location.href);
+                                })
+                        );
+                    });
+
+                    self.addEventListener('activate', event => {
+                        event.waitUntil(
+                            caches.keys().then(cacheNames => {
+                                return Promise.all(
+                                    cacheNames.filter(cacheName => {
+                                        return cacheName !== CACHE_NAME;
+                                    }).map(cacheName => {
+                                        return caches.delete(cacheName);
+                                    })
+                                );
+                            })
+                        );
+                    });
+                `;
+
+                const swBlob = new Blob([swCode], {type: 'application/javascript'});
+                const swUrl = URL.createObjectURL(swBlob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => {
+                        console.log('SW registered:', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('SW registration failed:', err);
+                    });
+            }
+        }
+
+        // Show install banner
+        function showInstallBanner() {
+            if (isPWAInstalled) return;
+            
+            const dismissed = localStorage.getItem('pwa-install-dismissed');
+            if (dismissed) {
+                const dismissedTime = parseInt(dismissed);
+                const now = Date.now();
+                const daysSinceDismissed = (now - dismissedTime) / (1000 * 60 * 60 * 24);
+                if (daysSinceDismissed < 3) return;
+            }
+
+            setTimeout(() => {
+                const banner = document.getElementById('pwa-install-banner');
+                if (banner) banner.classList.add('show');
+            }, 3000);
+        }
+
+        // Install PWA
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(choiceResult => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted PWA install');
+                        isPWAInstalled = true;
+                    }
+                    deferredPrompt = null;
+                    const banner = document.getElementById('pwa-install-banner');
+                    if (banner) banner.classList.remove('show');
+                });
+            }
+        }
+
+        // Dismiss banner
+        function dismissInstallBanner() {
+            const banner = document.getElementById('pwa-install-banner');
+            if (banner) banner.classList.remove('show');
+            localStorage.setItem('pwa-install-dismissed', Date.now().toString());
+        }
+
+        // iOS Install Instructions
+        function showIOSInstructions() {
+            Swal.fire({
+                title: '<i class="fas fa-mobile-alt text-gold"></i> Instalar App',
+                html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p style="margin-bottom: 15px; color: #888;"><strong style="color: #FFD700;">Para instalar en iPhone/iPad:</strong></p>
+                        <ol style="padding-left: 20px; line-height: 2; color: #ccc;">
+                            <li>Toca el botón <strong style="color: #FFD700;">Compartir</strong> <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMTZDNS4zNzMgMTYgMCAxMC42MjcgMCA0SDJDMiA5LjUxOCA2LjQ4MiAxNCAxMiAxNFY5TDIxIDE4TDEyIDI3VjIyQzUuOTczIDIyIDEgMTcuMDI3IDEgMTFWOUgxVjExQzEgMTguMTggNi44MiAyNCAxNCAyNFYxOUwxOSAxNEwxMiA5VjE2WiIgZmlsbD0iI0ZGRDcwMCIvPjwvc3ZnPg==" style="width: 18px; height: 18px; vertical-align: middle;"> abajo</li>
+                            <li>Desliza y selecciona <strong style="color: #FFD700;">"Añadir a pantalla de inicio"</strong></li>
+                            <li>Toca <strong style="color: #FFD700;">"Añadir"</strong> arriba a la derecha</li>
+                        </ol>
+                        <p style="margin-top: 20px; color: #666; font-size: 12px;">¡Listo! Tu plan estará en tu pantalla principal.</p>
+                    </div>
+                `,
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#FFD700',
+                background: '#111',
+                color: '#fff',
+                showClass: { popup: 'animate__animated animate__fadeInUp' }
+            });
+        }
+
+        // Check if iOS
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        // Initialize PWA
+        function initPWA() {
+            createManifest();
+            registerServiceWorker();
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                showInstallBanner();
+            });
+
+            window.addEventListener('appinstalled', () => {
+                console.log('PWA installed successfully');
+                isPWAInstalled = true;
+                const banner = document.getElementById('pwa-install-banner');
+                if (banner) banner.classList.remove('show');
+            });
+
+            // Show iOS instructions banner for iOS devices
+            if (isIOS() && !isPWAInstalled) {
+                setTimeout(() => {
+                    showInstallBanner();
+                }, 5000);
+            }
+        }
+
+        // Run PWA init after app loads
+        setTimeout(initPWA, 1000);
+    </script>
+
+    <!-- PWA INSTALL BANNER -->
+    <div id="pwa-install-banner">
+        <div class="flex items-center gap-3 max-w-sm mx-auto">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-500/30 to-yellow-600/30 flex items-center justify-center flex-shrink-0 border border-yellow-500/30">
+                <i class="fas fa-download text-gold text-lg"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-white font-bold text-sm">Instalar mi Plan</p>
+                <p class="text-gray-400 text-xs">Accede rápido desde tu pantalla</p>
+            </div>
+            <div class="flex gap-2">
+                <button id="pwa-dismiss-btn" onclick="dismissInstallBanner()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <button id="pwa-install-btn" onclick="isIOS() ? showIOSInstructions() : installPWA()">
+                    <i class="fas fa-plus mr-1"></i> Instalar
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
